@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dynamic Tree Builder</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <div class="app-container">
+    <aside class="sidebar">
+      <div class="header-actions">
+        <h2>Branch Editor</h2>
+        <button id="btnToggleTheme" class="btn-theme" title="Toggle Dark/Light Mode">🌙</button>
+      </div>
+      
+      <div class="form-group">
+        <div id="targetIndicator" class="target-indicator">📍 Target: <strong>Main Tree</strong></div>
+        <button id="btnResetTarget" class="btn-reset" style="display: none;">Reset Target</button>
+      </div>
+
+      <input type="hidden" id="targetParentId" value="">
+      <input type="hidden" id="editNodeId" value="">
+
+      <div class="form-group">
+        <label for="nodeName">Name:</label>
+        <input type="text" id="nodeName" placeholder="Enter name..." autocomplete="off">
+      </div>
+
+      <div class="form-group">
+        <label for="nodeDesc">Description (optional):</label>
+        <textarea id="nodeDesc" rows="3" placeholder="Add details..."></textarea>
+      </div>
+
+      <div class="form-group color-group">
+        <div class="color-picker-wrapper">
+          <label for="nodeBorderColor">Border Color:</label>
+          <input type="color" id="nodeBorderColor" value="#1a73e8">
+        </div>
+        <div class="color-picker-wrapper">
+          <label for="nodeTextColor">Title Text Color:</label>
+          <input type="color" id="nodeTextColor" value="#1a73e8">
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label class="checkbox-label" title="Applies only to branch title">
+          <input type="checkbox" id="syncColors" checked>
+          🔗 Sync text color with border
+        </label>
+      </div>
+
+      <button id="btnAddNode" class="btn-primary">Add Branch</button>
+      <button id="btnCancelEdit" class="btn-reset" style="display: none; width: 100%; margin-top: 5px;">Cancel Editing</button>
+
+      <hr>
+
+      <div class="form-group">
+        <label for="searchInput">Search:</label>
+        <input type="text" id="searchInput" placeholder="Search by name or description...">
+      </div>
+
+      <button id="btnSaveJson" class="btn-success">💾 Save JSON</button>
+      <input type="file" id="inputFile" accept=".json" style="display: none;">
+      <button id="btnLoadJson" class="btn-warning" style="margin-top: 10px;">📂 Load JSON</button>
+    </aside>
+
+    <main class="tree-container">
+      <ul id="treeRoot"></ul>
+    </main>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
