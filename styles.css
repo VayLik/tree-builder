@@ -87,3 +87,12 @@ details[open] > summary .toggle-icon::after { transform: rotate(45deg); margin-l
 .btn-delete:hover { background-color: #fce8e6; color: #d93025; }
 
 .node-desc { font-size: 0.9rem; color: var(--text-muted); margin-top: 10px; margin-left: 44px; padding: 10px 14px; background: var(--target-bg); border-radius: 8px; border-left: 3px solid var(--border-light); line-height: 1.5; }
+
+select.btn-theme {
+  appearance: none;         
+  -webkit-appearance: none; 
+  text-align: center;
+  padding: 6px 10px;
+  font-size: 1.1rem;
+  outline: none;
+}
