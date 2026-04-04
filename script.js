@@ -1,6 +1,6 @@
 let treeData = [];
 let hasUnsavedChanges = false; 
-let currentLang = localStorage.getItem('appLang') || 'uk-UA'; 
+let currentLang = localStorage.getItem('appLang') || 'en-US'; 
 let langDict = {}; 
 
 const treeRoot = document.getElementById('treeRoot');
