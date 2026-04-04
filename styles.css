@@ -49,19 +49,14 @@ hr { border: 0; border-top: 1px solid var(--border-light); margin: 24px 0; }
 
 .tree-container { background: transparent; padding: 0 10px; flex-grow: 1; min-height: 500px; overflow-x: auto; }
 
-/* Круглі лінії зі зсувом вправо */
 ul { list-style-type: none; padding-left: 45px; margin: 0; }
 #treeRoot { padding-left: 0; }
 li { position: relative; padding-top: 6px; padding-bottom: 6px; }
 
 #treeRoot ul li::before { content: ''; position: absolute; top: 0; bottom: 0; left: -22px; border-left: 2px solid var(--line-color); }
-#treeRoot ul li::after { 
-  content: ''; position: absolute; top: 28px; left: -22px; width: 22px; 
-  border-bottom: 2px solid var(--line-color); border-bottom-left-radius: 16px; 
-}
+#treeRoot ul li::after { content: ''; position: absolute; top: 28px; left: -22px; width: 22px; border-bottom: 2px solid var(--line-color); border-bottom-left-radius: 16px; }
 #treeRoot ul li:last-child::before { bottom: auto; height: 28px; }
 
-/* ВИПРАВЛЕНО БАГ ЗІ СТИСКАННЯМ КАРТКИ */
 details summary { cursor: pointer; user-select: none; list-style: none; display: block; outline: none; }
 details summary::-webkit-details-marker { display: none; }
 
@@ -71,42 +66,24 @@ details summary::-webkit-details-marker { display: none; }
 
 .node-header { display: flex; align-items: center; justify-content: space-between; gap: 15px; }
 
-/* min-width: 0 запобігає вилазенню довгого тексту за межі */
 .title-wrap { display: flex; align-items: center; gap: 10px; flex-grow: 1; min-width: 0; }
 
-/* Геометрична стрілочка для згортання папок */
 .toggle-icon { display: flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 6px; background: var(--target-bg); color: var(--text-muted); transition: 0.2s; flex-shrink: 0; }
 .toggle-icon:hover { background: var(--border-input); color: var(--text-main); }
 .toggle-placeholder { width: 24px; height: 24px; flex-shrink: 0; }
 
-.toggle-icon::after {
-  content: ''; display: inline-block; width: 6px; height: 6px;
-  border-right: 2px solid currentColor; border-bottom: 2px solid currentColor;
-  transform: rotate(-45deg); margin-left: -2px; transition: transform 0.2s ease;
-}
+.toggle-icon::after { content: ''; display: inline-block; width: 6px; height: 6px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(-45deg); margin-left: -2px; transition: transform 0.2s ease; }
 details[open] > summary .toggle-icon::after { transform: rotate(45deg); margin-left: 0; margin-bottom: 2px; }
 
 .color-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
 .node-text { font-weight: 500; font-size: 1rem; line-height: 1.4; word-wrap: break-word; white-space: normal; } 
 
-/* Контейнер кнопок дій (тепер він не стискається) */
 .node-actions { display: flex; gap: 4px; opacity: 0; transition: opacity 0.2s ease; flex-shrink: 0; align-items: center; }
 .node-card:hover .node-actions { opacity: 1; }
 
 .btn-icon { width: 28px; height: 28px; padding: 0; display: flex; align-items: center; justify-content: center; font-size: 13px; border-radius: 50%; border: none; background-color: var(--btn-icon-bg); color: var(--btn-icon-text); cursor: pointer; transition: 0.2s; }
-.btn-icon:hover { background-color: var(--target-bg); color: var(--text-main); }
+.btn-icon:hover { background: var(--target-bg); color: var(--text-main); }
 .btn-add-child:hover { background-color: #e8f0fe; color: #1a73e8; }
 .btn-delete:hover { background-color: #fce8e6; color: #d93025; }
 
-/* Дизайн самого опису */
-.node-desc { 
-  font-size: 0.9rem; 
-  color: var(--text-muted); 
-  margin-top: 10px; 
-  margin-left: 44px; /* Вирівнювання рівно під текстом */
-  padding: 10px 14px; 
-  background: var(--target-bg); 
-  border-radius: 8px; 
-  border-left: 3px solid var(--border-light); 
-  line-height: 1.5; 
-}
+.node-desc { font-size: 0.9rem; color: var(--text-muted); margin-top: 10px; margin-left: 44px; padding: 10px 14px; background: var(--target-bg); border-radius: 8px; border-left: 3px solid var(--border-light); line-height: 1.5; }
