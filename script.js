@@ -15,7 +15,7 @@ const editNodeId = document.getElementById('editNodeId');
 const targetIndicator = document.getElementById('targetIndicator');
 const btnResetTarget = document.getElementById('btnResetTarget');
 const btnToggleTheme = document.getElementById('btnToggleTheme');
-const btnToggleLang = document.getElementById('btnToggleLang');
+const langSelect = document.getElementById('langSelect');
 const btnAddNode = document.getElementById('btnAddNode');
 const btnCancelEdit = document.getElementById('btnCancelEdit');
 const syncColors = document.getElementById('syncColors');
@@ -37,7 +37,7 @@ async function loadLanguage(lang) {
     currentLang = lang;
     localStorage.setItem('appLang', lang);
 
-    btnToggleLang.textContent = lang === 'en-US' ? '🇺🇦 UK' : '🇺🇸 EN';
+    langSelect.value = lang;
     document.documentElement.lang = lang; 
     applyTranslations();
   } catch (error) {
@@ -45,9 +45,8 @@ async function loadLanguage(lang) {
   }
 }
 
-btnToggleLang.addEventListener('click', () => {
-  const newLang = currentLang === 'en-US' ? 'uk-UA' : 'en-US';
-  loadLanguage(newLang);
+langSelect.addEventListener('change', (e) => {
+  loadLanguage(e.target.value);
 });
 
 function applyTranslations() {
@@ -207,7 +206,6 @@ function deleteNodeById(dataArray, id) {
 }
 
 treeRoot.addEventListener('click', function(e) {
-  
   const descToggleBtn = e.target.closest('.btn-desc-toggle');
   if (descToggleBtn) {
     e.preventDefault();
