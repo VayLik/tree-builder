@@ -1,5 +1,7 @@
 let treeData = [];
 let hasUnsavedChanges = false; 
+let currentLang = localStorage.getItem('appLang') || 'uk-UA'; 
+let langDict = {}; 
 
 const treeRoot = document.getElementById('treeRoot');
 const searchInput = document.getElementById('searchInput');
@@ -13,22 +15,85 @@ const editNodeId = document.getElementById('editNodeId');
 const targetIndicator = document.getElementById('targetIndicator');
 const btnResetTarget = document.getElementById('btnResetTarget');
 const btnToggleTheme = document.getElementById('btnToggleTheme');
+const btnToggleLang = document.getElementById('btnToggleLang');
 const btnAddNode = document.getElementById('btnAddNode');
 const btnCancelEdit = document.getElementById('btnCancelEdit');
 const syncColors = document.getElementById('syncColors');
 
+async function initApp() {
+  await loadLanguage(currentLang);
+
+  if (localStorage.getItem('theme') === 'dark') {
+    document.body.classList.add('dark-mode');
+    btnToggleTheme.textContent = '☀️';
+  }
+  renderTree();
+}
+
+async function loadLanguage(lang) {
+  try {
+    const response = await fetch(`${lang}.json`);
+    langDict = await response.json();
+    currentLang = lang;
+    localStorage.setItem('appLang', lang);
+
+    btnToggleLang.textContent = lang === 'en-US' ? '🇺🇦 UK' : '🇺🇸 EN';
+    document.documentElement.lang = lang; 
+    applyTranslations();
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+btnToggleLang.addEventListener('click', () => {
+  const newLang = currentLang === 'en-US' ? 'uk-UA' : 'en-US';
+  loadLanguage(newLang);
+});
+
+function applyTranslations() {
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (langDict[key]) {
+      if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+        el.placeholder = langDict[key];
+      } else {
+        el.innerHTML = langDict[key];
+      }
+    }
+  });
+
+  if (editNodeId.value) {
+    btnAddNode.textContent = langDict["btn-update"];
+  } else {
+    btnAddNode.textContent = langDict["ui-btn-add"];
+  }
+
+  if (targetIndicator.innerHTML.includes('📍') || targetIndicator.innerHTML.includes('✏️')) {
+     if (editNodeId.value) {
+       const nodeText = inputName.value;
+       targetIndicator.innerHTML = `${langDict["target-edit"]} <strong>${nodeText}</strong>`;
+     } else if (inputParentId.value === '') {
+       targetIndicator.innerHTML = langDict["ui-target-main"];
+     } else {
+       const strongTag = targetIndicator.querySelector('strong');
+       const pName = strongTag ? strongTag.innerText : '';
+       targetIndicator.innerHTML = `${langDict["target-prefix"]} <strong>${pName}</strong>`;
+     }
+  }
+
+  renderTree();
+}
+
 inputBorderColor.addEventListener('input', function() {
   if (syncColors.checked) { inputTextColor.value = this.value; }
 });
+
 inputTextColor.addEventListener('input', function() { syncColors.checked = false; });
+
 syncColors.addEventListener('change', function() {
   if (this.checked) { inputTextColor.value = inputBorderColor.value; }
 });
 
-if (localStorage.getItem('theme') === 'dark') {
-  document.body.classList.add('dark-mode');
-  btnToggleTheme.textContent = '☀️';
-}
 btnToggleTheme.addEventListener('click', () => {
   document.body.classList.toggle('dark-mode');
   if (document.body.classList.contains('dark-mode')) {
@@ -41,7 +106,8 @@ btnToggleTheme.addEventListener('click', () => {
 function renderTree() {
   treeRoot.innerHTML = '';
   if (treeData.length === 0) {
-    treeRoot.innerHTML = '<li style="color: var(--text-muted); padding: 20px;">The tree is empty. Add your first branch!</li>';
+    const emptyText = langDict["tree-empty"] || "The tree is empty. Add your first branch!";
+    treeRoot.innerHTML = `<li style="color: var(--text-muted); padding: 20px;">${emptyText}</li>`;
     return;
   }
   treeData.forEach(node => treeRoot.appendChild(createNodeElement(node)));
@@ -53,7 +119,7 @@ function createNodeElement(node) {
   let descHtml = '';
   let descBtnHtml = '';
   if (node.description) {
-    // Кнопка опису (стрілочка) тепер тут, серед інших іконок!
+    const descText = langDict["btn-desc"] || "Description";
     descBtnHtml = `<button class="btn-icon btn-desc-toggle" title="Toggle Description">🔽</button>`;
     descHtml = `<div class="node-desc" style="display: none;">${node.description}</div>`;
   }
@@ -104,7 +170,6 @@ function createNodeElement(node) {
     spacerWrapper.style.alignItems = 'flex-start';
     spacerWrapper.style.gap = '8px';
     
-    // Відступ для вирівнювання з тими елементами, що мають стрілочку згортання
     const spacer = document.createElement('div');
     spacer.style.width = '16px'; 
     spacer.style.flexShrink = '0';
@@ -143,7 +208,6 @@ function deleteNodeById(dataArray, id) {
 
 treeRoot.addEventListener('click', function(e) {
   
-  // 1. Відкриття/закриття опису через стрілочку 🔽
   const descToggleBtn = e.target.closest('.btn-desc-toggle');
   if (descToggleBtn) {
     e.preventDefault();
@@ -159,7 +223,6 @@ treeRoot.addEventListener('click', function(e) {
     return;
   }
 
-  // 2. Додавання гілки
   if (e.target.closest('.btn-add-child')) {
     e.preventDefault();
     btnCancelEdit.click();
@@ -168,18 +231,18 @@ treeRoot.addEventListener('click', function(e) {
     const parentName = btn.getAttribute('data-name');
     
     inputParentId.value = parentId;
-    targetIndicator.innerHTML = `📍 Target: <strong>${parentName}</strong>`;
+    targetIndicator.innerHTML = `${langDict["target-prefix"]} <strong>${parentName}</strong>`;
     btnResetTarget.style.display = 'block';
     inputName.focus();
     return;
   }
   
-  // 3. Видалення гілки
   if (e.target.closest('.btn-delete')) {
     e.preventDefault();
     const btn = e.target.closest('.btn-delete');
     const idToDelete = btn.getAttribute('data-id');
-    if (confirm("Are you sure you want to delete this branch? All sub-branches will be deleted too.")) {
+    const alertMsg = langDict["alert-delete"] || "Are you sure you want to delete this branch?";
+    if (confirm(alertMsg)) {
       deleteNodeById(treeData, idToDelete);
       if (inputParentId.value === idToDelete || editNodeId.value === idToDelete) { 
         btnCancelEdit.click(); 
@@ -191,7 +254,6 @@ treeRoot.addEventListener('click', function(e) {
     return;
   }
 
-  // 4. Редагування гілки
   if (e.target.closest('.btn-edit')) {
     e.preventDefault();
     const btn = e.target.closest('.btn-edit');
@@ -206,9 +268,9 @@ treeRoot.addEventListener('click', function(e) {
       syncColors.checked = (inputBorderColor.value === inputTextColor.value);
       editNodeId.value = node.id;
       inputParentId.value = ''; 
-      targetIndicator.innerHTML = `✏️ Editing: <strong>${node.text}</strong>`;
+      targetIndicator.innerHTML = `${langDict["target-edit"]} <strong>${node.text}</strong>`;
       btnResetTarget.style.display = 'none';
-      btnAddNode.textContent = '💾 Update Branch';
+      btnAddNode.textContent = langDict["btn-update"];
       btnCancelEdit.style.display = 'block';
       inputName.focus();
     }
@@ -218,7 +280,7 @@ treeRoot.addEventListener('click', function(e) {
 
 btnResetTarget.addEventListener('click', function() {
   inputParentId.value = '';
-  targetIndicator.innerHTML = `📍 Target: <strong>Main Tree</strong>`;
+  targetIndicator.innerHTML = langDict["ui-target-main"];
   this.style.display = 'none';
 });
 
@@ -226,9 +288,9 @@ btnCancelEdit.addEventListener('click', function() {
   editNodeId.value = '';
   inputName.value = '';
   inputDesc.value = '';
-  btnAddNode.textContent = 'Add Branch';
+  btnAddNode.textContent = langDict["ui-btn-add"];
   this.style.display = 'none';
-  targetIndicator.innerHTML = `📍 Target: <strong>Main Tree</strong>`;
+  targetIndicator.innerHTML = langDict["ui-target-main"];
 });
 
 btnAddNode.addEventListener('click', function() {
@@ -239,7 +301,10 @@ btnAddNode.addEventListener('click', function() {
   const parentId = inputParentId.value;
   const editingId = editNodeId.value;
 
-  if (!text) { alert("Please enter a branch name!"); return; }
+  if (!text) { 
+    alert(langDict["alert-name"] || "Please enter a branch name!"); 
+    return; 
+  }
 
   if (editingId) {
     const node = findNodeById(treeData, editingId);
@@ -261,7 +326,10 @@ btnAddNode.addEventListener('click', function() {
 });
 
 document.getElementById('btnSaveJson').addEventListener('click', function() {
-  if (treeData.length === 0) { alert("The tree is empty, nothing to save."); return; }
+  if (treeData.length === 0) { 
+    alert(langDict["alert-empty"] || "The tree is empty, nothing to save."); 
+    return; 
+  }
   const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(treeData, null, 2));
   const downloadAnchorNode = document.createElement('a');
   downloadAnchorNode.setAttribute("href", dataStr);
@@ -283,13 +351,16 @@ document.getElementById('inputFile').addEventListener('change', function(e) {
       const loadedData = JSON.parse(event.target.result);
       if (Array.isArray(loadedData)) { 
         treeData = loadedData; hasUnsavedChanges = false; renderTree(); btnCancelEdit.click(); 
-      } else { alert("Invalid file format. Expected a JSON array."); }
-    } catch (error) { alert("Error reading JSON file. Ensure it is not corrupted."); }
+      } else { 
+        alert(langDict["alert-format"] || "Invalid file format. Expected a JSON array."); 
+      }
+    } catch (error) { 
+      alert(langDict["alert-error"] || "Error reading JSON file."); 
+    }
   };
   reader.readAsText(file); this.value = '';
 });
 
-// Розширений пошук з автоматичним відкриттям опису
 searchInput.addEventListener('input', function() {
   const filter = this.value.toLowerCase().trim();
   const allItems = treeRoot.querySelectorAll('li');
@@ -306,7 +377,6 @@ searchInput.addEventListener('input', function() {
     if (textContent.includes(filter) || descContent.includes(filter)) {
       li.style.display = '';
       
-      // Якщо знайшли збіг в описі — автоматично відкриваємо його
       if (descContent.includes(filter) && filter !== "") {
         if (descDiv && descDiv.style.display === 'none') {
           descDiv.style.display = 'block';
@@ -327,4 +397,4 @@ window.addEventListener('beforeunload', function (e) {
   if (hasUnsavedChanges) { e.preventDefault(); e.returnValue = ''; }
 });
 
-renderTree();
+initApp();
