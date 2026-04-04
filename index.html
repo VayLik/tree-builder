@@ -11,11 +11,13 @@
     <aside class="sidebar">
       <div class="header-actions">
         <h2 data-i18n="ui-title">Branch Editor</h2>
-        <div style="display: flex; gap: 8px;">
-          <button id="btnToggleLang" class="btn-theme" title="Switch Language">🇺🇦 UK</button>
-          <button id="btnToggleTheme" class="btn-theme" title="Toggle Dark/Light Mode">🌙</button>
-        </div>
-      </div>
+<div style="display: flex; gap: 8px; align-items: center;">
+  <select id="langSelect" class="btn-theme" title="Select Language">
+    <option value="uk-UA">🇺🇦</option>
+    <option value="en-US">🇺🇸</option>
+  </select>
+  <button id="btnToggleTheme" class="btn-theme" title="Toggle Dark/Light Mode">🌙</button>
+</div>
       
       <div class="form-group">
         <div id="targetIndicator" class="target-indicator" data-i18n="ui-target-main">📍 Target: <strong>Main Tree</strong></div>
